@@ -32,6 +32,7 @@ RUN \
     pkg-config \
     software-properties-common \
     gpg \
+    openvpn \
     dirmngr
 
 WORKDIR /tmp/transmission

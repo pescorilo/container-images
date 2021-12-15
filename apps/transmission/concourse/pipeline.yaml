@@ -1,0 +1,33 @@
+---
+resources:
+- name: container-images
+  type: git
+  source:
+    uri: ((git_uri))
+    branch: ((git_branch))
+
+jobs:
+- name: kaniko_build
+  plan:
+    - in_parallel:
+      - get: container-images
+        trigger: true
+    - task: kaniko_build_task
+      config:
+        platform: linux
+        image_resource: 
+          type: registry-image
+          source:
+            repository: gcr.io/kaniko-project/executor
+            tag: arm64
+        params:
+          CI_REGISTRY: ghcr.io
+          DOCKER_DIR: container-images/apps/transmission
+          DESTINATION: ghcr.io/pescorilo/transmision-vpn
+          CI_REGISTRY_USER: ((git_user))
+          CI_REGISTRY_PASSWORD: ((git_token))
+          TAG: 0.1
+        run:
+          path: sh
+          args: 
+            - container-images/apps/transmission/concourse/kaniko.sh
